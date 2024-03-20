@@ -22,7 +22,15 @@ app.get("/getuser/:id", async(req, res)=>{
   res.status(200).send(data)
 })
 
+app.put("/update/:id", async(req, res) =>{
+  await User.update(req.params.id, req.body);
+  res.status(200).send("user info update")
+})
 
+app.delete("/delete/:id", async(req, res) =>{
+  await User.delete(req.params.id);
+  res.status(200).send("Deleted successfully")
+})
 
 
 
