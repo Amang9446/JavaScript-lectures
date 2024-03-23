@@ -28,4 +28,23 @@ async function findAllUsers(){
     }
 }
 
-module.exports = {createUser, findAllUsers}
+async function findById(id){
+    try {
+        const result = await User.findById(id);
+        return result;
+    } catch (error) {
+        console.log(error);
+        throw error
+    }
+}
+
+async function update(id, data){
+    try {
+        const result = await User.findByIdAndUpdate(id, data, {new: true});
+        return result;
+    } catch (error) {
+        console.log(error);
+        throw error
+    }
+}
+module.exports = {createUser, findAllUsers, findById, update}
