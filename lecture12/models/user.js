@@ -1,4 +1,6 @@
 const mongoose = require('mongoose')
+const bcrypt = require('bcrypt');
+const saltRounds = 10;
 const userSchema = new mongoose.Schema({
     username: String,
     email: String,
@@ -9,7 +11,17 @@ const User = mongoose.model('User', userSchema)
 
 async function createUser(data){
     try{
-        const user = new User(data);
+        const existingUser = await User.findOne({email: data.email});
+        if(existingUser){
+            const message = "Email already Exist"
+            return message;
+        }
+        const hashpassword = await bcrypt.hash(data.password, 10);
+        const user = new User({
+            username: data.username,
+            email: data.email,
+            password: hashpassword
+        });
         const result = await user.save();
         return result;
     }catch(error){
@@ -17,6 +29,7 @@ async function createUser(data){
         throw error;
     }
 }
+
 async function login(data){
     try {
         const user = await User.findOne({email: data.email})
@@ -33,6 +46,8 @@ async function login(data){
         throw error
     }
 }
+
+
 async function findAllUsers(){
     try {
         const result = await User.find();
@@ -62,4 +77,4 @@ async function update(id, data){
         throw error
     }
 }
-module.exports = {createUser, findAllUsers, findById, update}
+module.exports = {createUser, findAllUsers, findById, update, login}
