@@ -1,29 +1,29 @@
 const express = require("express");
 require("./db");
-const { createUser , findAllUsers, findById, update} = require("./models/user")
+const { createUser , findAllUsers, findById, update, login} = require("./models/user")
 const app = express();
 app.use(express.json());
 
 
 app.post("/add", async (req, res) =>{
-  try{
-    const data = await createUser(req.body);
-    res.status(201).json({data})
-  }catch(error){
-    console.log(error);
-    res.status(500).json({error: "Failed to create user"})
-  }
-});
+  const {username, email, password} = req.body;
+  const emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
 
-app.get("/get", async(req, res)=>{
+  if(!username || !email || !password){
+    return res.status(400).json({error: "Some required feilds are missing"})
+  }
+  if(!emailRegex.test(email)){
+    return res.status(400).json({error: "Email is not valid"})
+  }
+  
   try {
-    const data = await findAllUsers();
-  res.status(200).json(data)
+    const data = await createUser(req.body);
+    res.status(200).json({data})
   } catch (error) {
     console.log(error);
-    res.status(500).json({error: "Failed to get users"})
+    res.status(500).json({error: "Internal Server error"})
   }
-})
+});
 
 app.post("/login", async(req, res)=>{
   try {
@@ -32,6 +32,16 @@ app.post("/login", async(req, res)=>{
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: "Internal Server error"})
+  }
+})
+
+app.get("/get", async(req, res)=>{
+  try {
+    const data = await findAllUsers();
+  res.status(200).json(data)
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({error: "Failed to get users"})
   }
 })
 
