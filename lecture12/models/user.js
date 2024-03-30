@@ -17,7 +17,22 @@ async function createUser(data){
         throw error;
     }
 }
-
+async function login(data){
+    try {
+        const user = await User.findOne({email: data.email})
+        if(!user){
+            return { message: "Email doesn't exist"}
+        }
+        const matchedpassword = await bcrypt.compare(data.password, user.password);
+        if(!matchedpassword){
+            return { message: "Invalid Password"}
+        }
+        return {message: "Login Successfully"}
+    } catch (error) {
+        console.log(error);
+        throw error
+    }
+}
 async function findAllUsers(){
     try {
         const result = await User.find();
