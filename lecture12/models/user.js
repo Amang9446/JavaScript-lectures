@@ -34,7 +34,7 @@ async function login(data){
     try {
         const user = await User.findOne({email: data.email})
         if(!user){
-            return { message: "Email doesn't exist"}
+            return { message: "Users doesn't exist"}
         }
         const matchedpassword = await bcrypt.compare(data.password, user.password);
         if(!matchedpassword){
