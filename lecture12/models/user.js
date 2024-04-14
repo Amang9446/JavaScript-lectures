@@ -1,6 +1,8 @@
 const mongoose = require('mongoose')
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
+const jwt = require('jsonwebtoken')
+const secreatKey = "zdfhgasbcegzrxgcgbsbjcfgrgfcnka83745637w5tx4q83tw"
 const userSchema = new mongoose.Schema({
     username: String,
     email: String,
@@ -40,7 +42,8 @@ async function login(data){
         if(!matchedpassword){
             return { message: "Invalid Password"}
         }
-        return {message: "Login Successfully"}
+        const token = jwt.sign({userId: user._id}, secreatKey, {expiresIn: '1h'})
+        return {token,message: "Login Successfully"}
     } catch (error) {
         console.log(error);
         throw error

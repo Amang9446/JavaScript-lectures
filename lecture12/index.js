@@ -2,6 +2,7 @@ const express = require("express");
 require("./db");
 const multer = require("multer");
 const upload = multer({ dest: "uploads/" });
+const verifyToken = require('./middleware/jwt.middleware')
 const cors = require("cors");
 const {
   createUser,
@@ -33,18 +34,16 @@ app.post("/add", async (req, res) => {
     res.status(500).json({ error: "Internal Server error" });
   }
 });
-
 app.post("/login", async (req, res) => {
   try {
-    const { message } = await login(req.body);
-    res.status(200).json({ message });
+    const { message, token } = await login(req.body);
+    res.status(200).json({ message,token});
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: "Internal Server error" });
   }
 });
-
-app.get("/get", async (req, res) => {
+app.get("/get",verifyToken, async (req, res) => {
   try {
     const data = await findAllUsers();
     res.status(200).json(data);
@@ -53,7 +52,6 @@ app.get("/get", async (req, res) => {
     res.status(500).json({ error: "Failed to get users" });
   }
 });
-
 app.get("/get-by-id/:id", async (req, res) => {
   try {
     const data = await findById(req.params.id);
@@ -71,15 +69,12 @@ app.put("/update/:id", async (req, res) => {
     res.status(500).json({ error: "failed to update" });
   }
 });
-
-app.post("/upload",upload.array('file'), async (req, res, next) => {
+app.post("/upload", upload.array("file"), async (req, res, next) => {
   res.send("Uploaded");
 });
-
 app.get("/", (req, res) => {
   res.send("Hello Aman");
 });
-
 app.listen(3000, () => {
   console.log("Server is running on Port 3000");
 });
