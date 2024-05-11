@@ -37,13 +37,13 @@ app.post("/add", async (req, res) => {
 app.post("/login", async (req, res) => {
   try {
     const { message, token } = await login(req.body);
-    res.status(200).json({ message,token});
+    res.status(200).json({ message, token });
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: "Internal Server error" });
   }
 });
-app.get("/get",verifyToken, async (req, res) => {
+app.get("/get", verifyToken, async (req, res) => {
   try {
     const data = await findAllUsers();
     res.status(200).json(data);
